@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student Details</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles to align content with the sidebar */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Adjust according to sidebar width from navbar.html */
+            padding: 20px;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .error-message, .success-message {
+            font-weight: bold;
+        }
+        .error-message {
+            color: red;
+        }
+        .success-message {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Sidebar Navigation -->
+    {% include 'navbar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="mb-4 text-center">Add Student Details</h2>
+        {% if error_message %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+        {% if success_message %}
+            <p class="success-message">{{ success_message }}</p>
+        {% endif %}
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="full_name">Full Name:</label>
+                    <input type="text" id="full_name" name="full_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="father_name">Father's Name:</label>
+                    <input type="text" id="father_name" name="father_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="mother_name">Mother's Name:</label>
+                    <input type="text" id="mother_name" name="mother_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <input type="number" id="age" name="age" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" class="form-control" required>
+                        <option value="" disabled selected>Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address:</label>
+                    <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="course_name">Course Name:</label>
+                    <select id="course_name" name="course_name" class="form-control" required>
+                        <option value="" disabled selected>Select</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="scholarship">Scholarship:</label>
+                    <select id="scholarship" name="scholarship" class="form-control">
+                        <option value="" disabled selected>Select</option>
+                        <option value="E-grants">E-grants</option>
+                        <option value="postgraduate">Postgraduate</option>
+                        <option value="graduate">Graduate</option>
+                        <option value="single girl child">Single Girl Child</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="admission_date">Admission Date:</label>
+                    <input type="date" id="admission_date" name="admission_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="admission_number">Admission Number:</label>
+                    <input type="text" id="admission_number" name="admission_number" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="hosteler">Hosteler:</label>
+                    <select id="hosteler" name="hosteler" class="form-control" required>
+                        <option value="" disabled selected>Select</option>
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Student</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

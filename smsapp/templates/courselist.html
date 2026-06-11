@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Same as sidebar width from navbar.html */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="main-content">
+        <h1>Courses</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Course Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.name }}</td>
+                    <td>
+                        <a href="{% url 'student_list' course.name %}" class="btn btn-primary">View Students</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

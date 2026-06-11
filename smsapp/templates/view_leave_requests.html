@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Leave Requests</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background color */
+        }
+        .main-content {
+            margin-left: 250px; /* Adjust according to sidebar width from navbar.html */
+            padding: 20px;
+        }
+        table {
+            margin-top: 20px;
+        }
+        .btn-approve, .btn-deny {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="main-content">
+        <h2 class="mb-4">Leave Requests</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Subject</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in leave_requests %}
+                    <tr>
+                        <td>{{ request.student_name.full_name }}</td>
+                        <td>{{ request.subject }}</td>
+                        <td>{{ request.from_date }}</td>
+                        <td>{{ request.to_date }}</td>
+                        <td>{{ request.status }}</td>
+                        <td>
+                            {% if request.status == "Pending" %}
+                                <form method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                                    <button type="submit" name="action" value="approve" class="btn btn-success btn-sm btn-approve">Approve</button>
+                                    <button type="submit" name="action" value="deny" class="btn btn-danger btn-sm btn-deny">Deny</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">No leave requests found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

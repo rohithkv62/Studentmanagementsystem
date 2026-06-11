@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for vertical navbar */
+        .sidebar {
+            height: 100vh;
+            width: 250px; /* Sidebar width */
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            border-right: 1px solid #dee2e6; /* Border for sidebar */
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
+        .sidebar .user-info {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center; /* Center align user info */
+        }
+        .sidebar .user-info h4 {
+            margin: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Offset to account for sidebar width */
+            padding: 20px; /* Add padding to the main content */
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        {% if user.is_authenticated %}
+            <div class="user-info">
+                <h4>Welcome, {{ user.username }}</h4>
+            </div>
+            {% if user.is_superuser %}
+                <a href="{% url 'add_user' %}">Add User</a>
+                <a href="{% url 'add_course' %}">Add Course</a>
+                <a href="{% url 'courses' %}">View Course</a>
+                <a href="{% url 'feedback_list' %}">Feedbacks</a>
+                <a href="{% url 'hostel_fee_receipts' %}">Hostel Fee Receipts</a>
+                <a href="{% url 'view_leave_requests' %}">Leave requests</a>
+                <a href="{% url 'subcourse_list' %}">Add subject</a>
+                <a href="{% url 'course_list' %}">Add mark</a>
+                <a href="{% url 'view_marks' %}">View Marks</a>
+
+                
+            {% else %}
+                <a href="{% url 'add_student' %}">Add Student Detail</a>
+                <a href="{% url 'add_feedback' %}">Add Feedback</a>
+                <a href="{% url 'hostel_fee_details' %}">Hostel Fee Details</a>
+                <a href="{% url 'add_leave_request' %}">Add Leave</a>
+                <a href="{% url 'student_leave_status' %}">Leave Status</a>
+                <a href="{% url 'usermark' %}">View Marks</a>
+
+            {% endif %}
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </nav>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <!-- Content goes here -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

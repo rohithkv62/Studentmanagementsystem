@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background color */
+        }
+        .container {
+            max-width: 1200px; /* Consistent max-width for the container */
+            margin-top: 80px; /* Offset to account for fixed navbar height */
+        }
+        .table {
+            margin-left: 100px; /* Move table to the right */
+        }
+        .table th, .table td {
+            text-align: left; /* Align text to the left */
+        }
+        .table thead th {
+            background-color: #007bff; /* Primary color for table header */
+            color: white;
+        }
+        .table tbody tr:nth-child(odd) {
+            background-color: #e9ecef; /* Alternate row color */
+        }
+        .table tbody tr:hover {
+            background-color: #f1f1f1; /* Highlight row on hover */
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2 class="mb-4 text-center">Feedback List</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feedback in feedbacks %}
+                    <tr>
+                        <td>{{ feedback.student_name.full_name }}</td>
+                        <td>{{ feedback.title }}</td>
+                        <td>{{ feedback.content }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">No feedback available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

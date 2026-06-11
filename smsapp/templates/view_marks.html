@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Marks</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Same as sidebar width from navbar.html */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        {% include 'navbar.html' %}
+        <h1>View Marks</h1>
+        <form method="POST" class="mb-4">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="admission_number">Admission Number:</label>
+                <input type="text" class="form-control" id="admission_number" name="admission_number" required>
+            </div>
+            <div class="form-group">
+                <label for="semester">Semester:</label>
+                <select class="form-control" id="semester" name="semester" required>
+                    <option value="" disabled selected>Select Semester</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">View Marks</button>
+        </form>
+
+        {% if marks is not None %}
+            {% if marks %}
+                <h2>Marks Obtained</h2>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Marks Obtained</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mark in marks %}
+                            <tr>
+                                <td>{{ mark.subject.subject_name }}</td>
+                                <td>{{ mark.marks_obtained }}</td>
+                                {% if msg == "Passed" %}
+                                <td style="color: green;">Passed</td>
+                                {% else %}
+                                <td style="color: red;">Failed</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    No marks found for the provided admission number and semester.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

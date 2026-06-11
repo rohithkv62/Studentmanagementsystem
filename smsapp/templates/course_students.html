@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.name }} Students</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background color */
+        }
+        .container {
+            max-width: 1200px; /* Consistent max-width for the container */
+            margin-top: 80px; /* Offset to account for fixed navbar height */
+        }
+        .btn-secondary {
+            background-color: #6c757d; /* Secondary button color */
+            border: none; /* Remove border */
+            margin-right: 0; /* Remove right margin */
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268; /* Darker shade on hover */
+        }
+        .table-container {
+            margin-left: 100px; /* Pushes the table towards the right edge of the container */
+            margin-right: 0; /* Ensure there's no right margin */
+            padding-right: 30px; /* Add padding on the right side to move the table further right */
+        }
+        table {
+            margin-top: 20px;
+        }
+        th, td {
+            text-align: center; /* Center-align text in table cells */
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        td {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2 class="mb-4 text-center">Students Enrolled in {{ course.name }}</h2>
+        <div class="text-right">
+            <a href="{% url 'courses' %}" class="btn btn-secondary mb-4">Back to Courses</a>
+        </div>
+        <div class="table-container">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Father's Name</th>
+                        <th>Mother's Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Address</th>
+                        <th>Course Name</th>
+                        <th>Scholarship</th>
+                        <th>Admission Date</th>
+                        <th>Admission Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.full_name }}</td>
+                            <td>{{ student.father_name }}</td>
+                            <td>{{ student.mother_name }}</td>
+                            <td>{{ student.age }}</td>
+                            <td>{{ student.gender }}</td>
+                            <td>{{ student.address }}</td>
+                            <td>{{ student.course_name.name }}</td>
+                            <td>{{ student.scholarship }}</td>
+                            <td>{{ student.admission_date }}</td>
+                            <td>{{ student.admission_number }}</td>
+                            <td>
+                                <a href="{% url 'edit_student' student.id %}" class="btn btn-warning">Edit</a> <!-- Edit Button -->
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="10">No students enrolled.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

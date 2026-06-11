@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subcourse List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Same as sidebar width from navbar.html */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="main-content">
+        <h2 class="text-center">Subcourse List</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Subcourse Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subcourse in subcourses %}
+                <tr>
+                    <td>{{ subcourse.name }}</td>
+                    <td><a href="{% url 'add_subject' subcourse.id %}" class="btn btn-primary">Add Subjects</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

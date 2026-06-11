@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student List for {{ course_name }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Same as sidebar width from navbar.html */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="main-content">
+        <h1>Students in {{ course_name }}</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.admission_number }}</td>
+                    <td>{{ student.full_name }}</td>
+                    <td>
+                            <a href="{% url 'add_mark' course_name=course_name student_id=student.admission_number %}" class="btn btn-primary">Add Mark</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

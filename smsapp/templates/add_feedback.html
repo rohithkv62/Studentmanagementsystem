@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Feedback</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles to align content with the sidebar */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Adjust according to sidebar width from navbar.html */
+            padding: 20px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .error-message, .success-message {
+            font-weight: bold;
+        }
+        .error-message {
+            color: red;
+        }
+        .success-message {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Sidebar Navigation -->
+    {% include 'navbar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="mb-4 text-center">Add Feedback</h2>
+        {% if error_message %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+        {% if success_message %}
+            <p class="success-message">{{ success_message }}</p>
+        {% endif %}
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" class="form-control" maxlength="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">Content:</label>
+                    <textarea id="content" name="content" class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

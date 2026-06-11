@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Marks</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            margin-left: 250px; /* Same as sidebar width from navbar.html */
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="main-content">
+        <h2 class="text-center">View Marks for {{ student.full_name }}</h2>
+        
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="semester">Select Semester:</label>
+                <select id="semester" name="semester" class="form-control" required>
+                    <option value="" disabled selected>Select Semester</option>
+                    <option value="1" {% if selected_semester == '1' %}selected{% endif %}>1</option>
+                    <option value="2" {% if selected_semester == '2' %}selected{% endif %}>2</option>
+                    <option value="3" {% if selected_semester == '3' %}selected{% endif %}>3</option>
+                    <option value="4" {% if selected_semester == '4' %}selected{% endif %}>4</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">View Marks</button>
+        </form>
+
+        {% if marks %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Subject Name</th>
+                    <th>Subject Code</th>
+                    <th>Marks Obtained</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mark in marks %}
+                <tr>
+                    <td>{{ mark.subject.subject_name }}</td>
+                    <td>{{ mark.subject.subject_code }}</td>
+                    <td>{{ mark.marks_obtained }}</td>
+                    {% if msg == "Passed" %}
+                    <td style="color: green;">{{msg}}</td>
+                    {% else %}
+                    <td style="color: red;">{{msg}}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="text-center">No marks available for this semester.</p>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
