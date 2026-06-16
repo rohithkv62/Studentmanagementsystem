@@ -83,7 +83,25 @@ def signup(request):
 
 @login_required
 def landing_page(request):
-    return render(request, 'landing_page.html')
+    context = {}
+    if request.user.is_superuser:
+        context['total_students'] = StudentDetails.objects.count()
+        context['total_courses'] = Course.objects.count()
+        context['pending_leaves'] = LeaveRequest.objects.filter(status='Pending').count()
+        context['total_feedback'] = Feedback.objects.count()
+    else:
+        student_details = StudentDetails.objects.filter(username=request.user).first()
+        context['student_details'] = student_details
+        if student_details:
+            context['my_leaves'] = LeaveRequest.objects.filter(student_name=student_details).count()
+            context['my_pending_leaves'] = LeaveRequest.objects.filter(student_name=student_details, status='Pending').count()
+            context['fee_details'] = HostelFeeDetails.objects.filter(student=student_details).first()
+        else:
+            context['my_leaves'] = 0
+            context['my_pending_leaves'] = 0
+            context['fee_details'] = None
+            
+    return render(request, 'landing_page.html', context)
 
 def user_logout(request):
     logout(request)

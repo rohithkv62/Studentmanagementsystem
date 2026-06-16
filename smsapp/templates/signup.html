@@ -4,62 +4,297 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: 'Inter', sans-serif;
             margin: 0;
-            background-color: #f8f9fa; /* Light background color */
+            display: flex;
+            height: 100vh;
+            background-color: #f8fafc;
+            overflow: hidden;
         }
-        .login-container {
-            width: 100%;
-            max-width: 400px;
+        .left-panel {
+            position: relative;
+            flex: 0 0 45%;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10%;
+        }
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -150px;
+            width: 300px;
+            height: 120%;
+            background: linear-gradient(135deg, #1e40af 0%, #1e40af 100%);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .left-content {
+            position: relative;
+            z-index: 2;
+        }
+        .logo-circle {
+            width: 70px;
+            height: 70px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .brand-title span {
+            font-weight: 400;
+            color: #93c5fd;
+            font-size: 1.8rem;
+        }
+        .brand-subtitle {
+            font-size: 1.1rem;
+            color: #bfdbfe;
+            max-width: 80%;
+            line-height: 1.6;
+        }
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+            overflow-y: auto;
             padding: 20px;
-            background: #fff; /* White background for the form container */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
         }
-        .error-message {
-            color: red;
-            font-weight: bold;
+        .login-card {
+            margin: auto;
+            background: white;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 480px;
+        }
+        .user-icon-circle {
+            width: 70px;
+            height: 70px;
+            background: #eff6ff;
+            color: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 20px;
+        }
+        h3 {
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .welcome-text {
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            border-left: none;
+        }
+        .form-control:focus {
+            background-color: white;
+            border-color: #3b82f6;
+            box-shadow: none;
+        }
+        .input-group:focus-within {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+        }
+        .input-group:focus-within .input-group-text, .input-group:focus-within .form-control {
+            border-color: #3b82f6;
+            background-color: white;
+        }
+        .input-group-text {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #94a3b8;
+        }
+        .input-group-prepend .input-group-text {
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+        }
+        .input-group-append .input-group-text {
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            background-color: transparent;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            border-color: #2563eb;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+        .btn-outline {
+            background-color: white;
+            border: 1px solid #2563eb;
+            color: #2563eb;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-outline:hover {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+            color: #94a3b8;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .divider::before { margin-right: .25em; }
+        .divider::after { margin-left: .25em; }
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .alert {
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2 class="text-center">Student management System</h2>
-        <h4 class="text-center">Sign Up</h4>
-        {% if error_message %}
-            <p class="error-message text-center">{{ error_message }}</p>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" class="form-control" required>
+    <div class="left-panel">
+        <div class="left-content">
+            <div class="logo-circle">
+                <i class="fas fa-graduation-cap"></i>
             </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+            <div class="brand-title">
+                STUDENT<br>
+                <span>MANAGEMENT SYSTEM</span>
             </div>
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password:</label>
-                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
-        </form>
-        <div class="text-center mt-3">
-            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+            <p class="brand-subtitle">
+                A smart solution to manage students, classes, attendance, exams and more efficiently.
+            </p>
         </div>
     </div>
+    <div class="right-panel">
+        <div class="login-card">
+            <div class="user-icon-circle">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h3>Create an Account</h3>
+            <p class="welcome-text">Sign up to get started</p>
+            
+            {% if error_message %}
+                <div class="alert alert-danger text-center">{{ error_message }}</div>
+            {% endif %}
 
-    <!-- Include Bootstrap JS and dependencies -->
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="username" style="font-size: 0.9rem; font-weight: 600; color: #334155;">Username</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="far fa-user"></i></span>
+                        </div>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password" style="font-size: 0.9rem; font-weight: 600; color: #334155;">Password</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Create a password" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text" onclick="togglePassword('password', 'togglePasswordIcon')" style="cursor: pointer;">
+                                <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="confirm_password" style="font-size: 0.9rem; font-weight: 600; color: #334155;">Confirm Password</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Confirm your password" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text" onclick="togglePassword('confirm_password', 'toggleConfirmPasswordIcon')" style="cursor: pointer;">
+                                <i class="fas fa-eye" id="toggleConfirmPasswordIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus mr-2"></i> Sign Up</button>
+            </form>
+            
+            <div class="divider">or</div>
+            
+            <a href="{% url 'login' %}" class="btn-outline"><i class="fas fa-sign-in-alt mr-2"></i> Login to existing account</a>
+        </div>
+        <p class="footer-text">© 2026 Student Management System. All rights reserved.</p>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>
