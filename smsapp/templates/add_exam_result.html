@@ -1,0 +1,54 @@
+{% extends 'navbar.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> Add Exam Result</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{% url 'add_exam_result' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Select Student</label>
+                            <select name="student" class="form-select form-control" required>
+                                <option value="">-- Choose a Student --</option>
+                                {% for student in students %}
+                                    <option value="{{ student.admission_number }}">{{ student.full_name }} ({{ student.admission_number }}) - {{ student.course_name.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Select Subject</label>
+                            <select name="subject" class="form-select form-control" required>
+                                <option value="">-- Choose a Subject --</option>
+                                {% for subject in subjects %}
+                                    <option value="{{ subject.id }}">{{ subject.subject_name }} ({{ subject.course_name }} - Sem {{ subject.semester }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Marks Obtained</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-star text-warning"></i></span>
+                                <input type="number" step="0.01" min="0" max="100" name="marks" class="form-control form-control-lg" placeholder="Enter score out of 100" required>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{% url 'examinations_dashboard' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4"><i class="fas fa-save"></i> Save Result</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

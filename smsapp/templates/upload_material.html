@@ -1,0 +1,42 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Upload Study Material</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'upload_material' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="course">Course</label>
+                    <select name="course" id="course" class="form-control" required>
+                        <option value="">-- Select Course --</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="title">Material Title</label>
+                    <input type="text" name="title" id="title" class="form-control" required placeholder="e.g. Chapter 1 Notes">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="description">Description (Optional)</label>
+                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Brief description of the material..."></textarea>
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label for="file">File (PDF, Word, etc.)</label>
+                    <input type="file" name="file" id="file" class="form-control-file" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Upload Material</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

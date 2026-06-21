@@ -1,0 +1,99 @@
+{% extends 'navbar.html' %}
+{% block content %}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-signature text-primary"></i> Examinations Dashboard</h2>
+        <a href="{% url 'add_exam_result' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Exam Result
+        </a>
+    </div>
+
+    {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Filter Section -->
+    <div class="card shadow border-0 mb-4">
+        <div class="card-body bg-light">
+            <form method="GET" action="{% url 'examinations_dashboard' %}" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold small">Course Name</label>
+                    <input type="text" name="course" class="form-control" placeholder="e.g. BTech" value="{{ course_filter|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold small">Subject Name</label>
+                    <input type="text" name="subject" class="form-control" placeholder="e.g. Math" value="{{ subject_filter|default:'' }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted fw-bold small">Student Name</label>
+                    <input type="text" name="student" class="form-control" placeholder="Search by name..." value="{{ student_filter|default:'' }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-secondary w-100"><i class="fas fa-filter"></i> Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Admission No.</th>
+                            <th>Course</th>
+                            <th>Subject</th>
+                            <th>Marks Obtained</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mark in marks %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-primary text-white me-2 d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; border-radius: 50%;">
+                                            {{ mark.student.full_name|make_list|first|upper }}
+                                        </div>
+                                        <div class="fw-bold">{{ mark.student.full_name }}</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-secondary">{{ mark.student.admission_number }}</span></td>
+                                <td>{{ mark.subject.course_name }}</td>
+                                <td>{{ mark.subject.subject_name }}</td>
+                                <td><span class="fw-bold fs-5">{{ mark.marks_obtained }}</span></td>
+                                <td>
+                                    {% if mark.marks_obtained >= 50 %}
+                                        <span class="badge bg-success">Passed</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="fas fa-file-alt fa-2x mb-3 text-light"></i><br>
+                                    No exam results found.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,69 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course List</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa; /* Light background color */
-        }
-        .container {
-            max-width: 1200px; /* Max width of the container */
-            padding-top: 60px; /* Adjust padding-top if needed to ensure content is not overlapping the navbar */
-        }
-        .card {
-            transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effect */
-        }
-        .card:hover {
-            transform: scale(1.05); /* Slightly enlarge the card on hover */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
-        }
-        .card-title {
-            font-size: 1.25rem; /* Larger font size for course name */
-            font-weight: bold;
-        }
-        .btn-primary {
-            background-color: #007bff; /* Primary button color */
-            border: none; /* Remove border */
-        }
-        .btn-primary:hover {
-            background-color: #0056b3; /* Darker shade on hover */
-        }
-        h2 {
-            font-size: 2rem; /* Larger font size for heading */
-            font-weight: bold;
-        }
-        .offset-md-1 {
-            margin-left: 8.333333%; /* Adjust the margin as needed to move the cards to the right */
-        }
-    </style>
-</head>
-<body>
-    {% include 'navbar.html' %}
-    <div class="container mt-4">
-        <h2 class="mb-4 text-center">Courses</h2>
-        <div class="row">
-            <div class="col-md-1"></div> <!-- Add empty column for spacing -->
-            <div class="col-md-11">
-                <div class="row">
-                    {% for course in courses %}
-                        <div class="col-md-4 mb-4">
-                            <div class="card shadow-sm"> <!-- Added shadow for card -->
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ course.name }}</h5>
-                                    <a href="{% url 'course_students' course.id %}" class="btn btn-primary">View Students</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+{% extends 'navbar.html' %}
+{% block content %}
+<style>
+    .form-container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="container-fluid mt-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-book text-primary"></i> Subject Management</h2>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Add Subject Form Column -->
+        <div class="col-md-4 mb-4">
+            <div class="form-container">
+                <h5 class="mb-4 text-secondary"><i class="fas fa-plus-circle"></i> Add New Subject</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="subject_name" class="form-label fw-bold text-secondary">Subject Name</label>
+                        <input type="text" id="subject_name" name="subject_name" class="form-control" placeholder="e.g. Data Structures" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject_code" class="form-label fw-bold text-secondary">Subject Code</label>
+                        <input type="text" id="subject_code" name="subject_code" class="form-control" placeholder="e.g. CS101" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="semester" class="form-label fw-bold text-secondary">Semester</label>
+                        <input type="number" id="semester" name="semester" class="form-control" placeholder="e.g. 1" min="1" max="10" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="course_id" class="form-label fw-bold text-secondary">Assign to Class</label>
+                        <select id="course_id" name="course_id" class="form-select form-control" required>
+                            <option value="">Select a class...</option>
+                            {% for c in courses_list %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Add Subject</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Subjects List Column -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-secondary">All Subjects</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0" id="subjectsTable">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Subject ID</th>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Semester</th>
+                                    <th>Class</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subject in subjects %}
+                                <tr>
+                                    <td><strong>#{{ subject.id }}</strong></td>
+                                    <td><span class="badge bg-secondary">{{ subject.subject_code }}</span></td>
+                                    <td>
+                                        <div class="fw-bold">{{ subject.subject_name }}</div>
+                                    </td>
+                                    <td>{{ subject.semester }}</td>
+                                    <td>{{ subject.course_name }}</td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            {% if user.is_superuser %}
+                                            <a href="{% url 'delete_subject' subject.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this subject?');">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">
+                                        <i class="fas fa-book-open fa-2x mb-3 text-light"></i><br>
+                                        No subjects available yet. Use the form to add one.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+</div>
+
+{% endblock %}

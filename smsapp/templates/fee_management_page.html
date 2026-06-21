@@ -1,0 +1,107 @@
+{% extends 'navbar.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice-dollar text-success"></i> Fee Management</h2>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Fee Receipts Table -->
+<div class="card shadow border-0">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-secondary">All Fee Receipts</h5>
+        <div class="d-flex gap-2">
+            <input type="text" id="feeSearch" class="form-control form-control-sm" placeholder="Search..." onkeyup="filterTable('feeTable', 'feeSearch', [{id:'feeClass', attr:'class'}, {id:'feeStatus', attr:'status'}])" style="width: 150px;">
+            <select id="feeClass" class="form-control form-control-sm" onchange="filterTable('feeTable', 'feeSearch', [{id:'feeClass', attr:'class'}, {id:'feeStatus', attr:'status'}])" style="width: 120px;">
+                <option value="">Class</option>
+                {% for course in all_courses %}
+                    <option value="{{ course.name|lower }}">{{ course.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="feeStatus" class="form-control form-control-sm" onchange="filterTable('feeTable', 'feeSearch', [{id:'feeClass', attr:'class'}, {id:'feeStatus', attr:'status'}])" style="width: 120px;">
+                <option value="">Status</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="feeTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Course</th>
+                        <th>Admission Number</th>
+                        <th>Receipt Document</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receipt in receipts %}
+                    <tr data-class="{{ receipt.student.course_name.name|lower }}" data-status="{% if receipt.receipt_file %}paid{% else %}pending{% endif %}">
+                        <td>
+                            <div class="fw-bold">{{ receipt.student.full_name }}</div>
+                        </td>
+                        <td>{{ receipt.student.course_name.name }}</td>
+                        <td><span class="badge bg-secondary">{{ receipt.student.admission_number }}</span></td>
+                        <td>
+                            {% if receipt.receipt_file %}
+                                <a href="{{ receipt.receipt_file.url }}" target="_blank" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-download"></i> View Receipt
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No File</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_superuser %}
+                            <a href="{% url 'delete_fee_receipt' receipt.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this fee receipt?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No fee receipts found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterTable(tableId, searchInputId, selects) {
+    const table = document.getElementById(tableId);
+    if(!table) return;
+    const search = document.getElementById(searchInputId).value.toLowerCase();
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        let match = true;
+        if (search && !row.textContent.toLowerCase().includes(search)) {
+            match = false;
+        }
+        selects.forEach(sel => {
+            const val = document.getElementById(sel.id).value.toLowerCase();
+            if (val && row.getAttribute('data-' + sel.attr) !== val) {
+                match = false;
+            }
+        });
+        row.style.display = match ? '' : 'none';
+    });
+}
+</script>
+
+{% endblock %}

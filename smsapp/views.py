@@ -28,20 +28,21 @@ def add_user(request):
     return render(request, 'adduser.html')
 
 def add_course(request):
+    courses = Course.objects.all()
     if request.method == 'POST':
         course_name = request.POST['course_name']
 
         # Check if the course name already exists
         if Course.objects.filter(name=course_name).exists():
             error_message = "Course name already exists."
-            return render(request, 'addcourse.html', {'error_message': error_message})
+            return render(request, 'addcourse.html', {'error_message': error_message, 'courses': courses})
         
         # Create the course
         Course.objects.create(name=course_name)
         success_message = "Course added successfully!"
-        return render(request, 'addcourse.html', {'success_message': success_message})
+        return render(request, 'addcourse.html', {'success_message': success_message, 'courses': Course.objects.all()})
 
-    return render(request, 'addcourse.html')
+    return render(request, 'addcourse.html', {'courses': courses})
 
 def user_login(request):
     if request.method == 'POST':
@@ -83,13 +84,26 @@ def signup(request):
 
 @login_required
 def landing_page(request):
+    from .models import TeacherProfile, StudyMaterial
+    
+    # Auto-fix any existing teachers that don't have is_staff=True
+    if hasattr(request.user, 'teacher_profile') and not request.user.is_staff:
+        request.user.is_staff = True
+        request.user.save()
+
     context = {}
     if request.user.is_superuser:
         context['total_students'] = StudentDetails.objects.count()
         context['total_courses'] = Course.objects.count()
         context['pending_leaves'] = LeaveRequest.objects.filter(status='Pending').count()
         context['total_feedback'] = Feedback.objects.count()
+    elif request.user.is_staff:
+        # Teacher Dashboard context
+        context['total_students'] = StudentDetails.objects.count()
+        context['total_courses'] = Course.objects.count()
+        context['study_materials'] = StudyMaterial.objects.count()
     else:
+        # Student Dashboard context
         student_details = StudentDetails.objects.filter(username=request.user).first()
         context['student_details'] = student_details
         if student_details:
@@ -152,6 +166,11 @@ def add_student(request):
         )
 
         success_message = "Student details added successfully!" if created else "Student details updated successfully!"
+        
+        # Notify admins
+        from .models import Notification
+        Notification.objects.create(message=f"New student {'added' if created else 'updated'}: {full_name}")
+
         return render(request, 'add_student.html', {
             'success_message': success_message,
             'courses': Course.objects.all()
@@ -179,14 +198,30 @@ def add_feedback(request):
     return render(request, 'add_feedback.html')
 
 def add_leave_request(request):
+    from django.utils import timezone
     if request.method == 'POST':
         subject = request.POST['subject']
         from_date = request.POST['from_date']
         to_date = request.POST['to_date']
         status = 'Pending'
 
-        try:
-            student = StudentDetails.objects.get(username=request.user)
+        if request.user.is_staff and not request.user.is_superuser:
+            # Teacher applying for leave
+            first_course = Course.objects.first()
+            student, _ = StudentDetails.objects.get_or_create(
+                username=request.user,
+                defaults={
+                    'full_name': f"{request.user.first_name} {request.user.last_name} (Teacher)",
+                    'father_name': 'N/A',
+                    'mother_name': 'N/A',
+                    'age': 30,
+                    'gender': 'N/A',
+                    'address': 'N/A',
+                    'course_name': first_course,
+                    'admission_date': timezone.now().date(),
+                    'admission_number': f"T_{request.user.id}"
+                }
+            )
             LeaveRequest.objects.create(
                 student_name=student,
                 subject=subject,
@@ -194,17 +229,55 @@ def add_leave_request(request):
                 to_date=to_date,
                 status=status
             )
-            messages.success(request, "Leave request submitted successfully!")
-        except StudentDetails.DoesNotExist:
-            messages.error(request, "Student details not found.")
+            messages.success(request, "Teacher leave request submitted successfully!")
+            from .models import Notification
+            Notification.objects.create(message=f"New teacher leave request submitted by {student.full_name}")
+        else:
+            try:
+                student = StudentDetails.objects.get(username=request.user)
+                LeaveRequest.objects.create(
+                    student_name=student,
+                    subject=subject,
+                    from_date=from_date,
+                    to_date=to_date,
+                    status=status
+                )
+                messages.success(request, "Leave request submitted successfully!")
+                
+                # Notify admins
+                from .models import Notification
+                Notification.objects.create(message=f"New leave request submitted by {student.full_name}")
+            except StudentDetails.DoesNotExist:
+                messages.error(request, "Student details not found.")
         
         return redirect('add_leave_request')
 
     return render(request, 'add_leave_request.html')
 
 def courses(request):
-    courses = Course.objects.all()
-    return render(request, 'course_list.html', {'courses': courses})
+    subjects = Subject.objects.all()
+    courses_list = Course.objects.all()
+    
+    if request.method == 'POST':
+        subject_name = request.POST.get('subject_name')
+        subject_code = request.POST.get('subject_code')
+        semester = request.POST.get('semester')
+        course_id = request.POST.get('course_id')
+
+        if subject_name and subject_code and semester and course_id:
+            course = get_object_or_404(Course, id=course_id)
+            Subject.objects.create(
+                course_name=course.name,
+                subject_name=subject_name,
+                subject_code=subject_code,
+                semester=semester
+            )
+            messages.success(request, "Subject added successfully!")
+            return redirect('courses')
+        else:
+            messages.error(request, "Please fill all fields.")
+            
+    return render(request, 'course_list.html', {'subjects': subjects, 'courses_list': courses_list})
 
 def course_students(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -225,12 +298,24 @@ def view_leave_requests(request):
             leave_request.status = 'Approved' if action == 'approve' else 'Denied'
             leave_request.save()
             messages.success(request, "Leave request updated successfully!")
+            
+            # Notify the student
+            from .models import Notification
+            Notification.objects.create(
+                user=leave_request.student_name.username,
+                message=f"Your leave request for '{leave_request.subject}' was {leave_request.status}."
+            )
         except LeaveRequest.DoesNotExist:
             messages.error(request, "Leave request not found.")
         
         return redirect('view_leave_requests')
     
-    leave_requests = LeaveRequest.objects.all()
+    if request.user.is_superuser:
+        leave_requests = LeaveRequest.objects.all().order_by('-id')
+    else:
+        # Teachers only see student leave requests
+        leave_requests = LeaveRequest.objects.exclude(student_name__admission_number__startswith="T_").order_by('-id')
+        
     return render(request, 'view_leave_requests.html', {'leave_requests': leave_requests})
 
 from django.shortcuts import render
@@ -290,6 +375,11 @@ def hostel_fee_details(request):
                 fee_amount=hostel_fee_details.fee_amount
             )
             messages.success(request, "Receipt uploaded successfully!")
+            
+            # Notify admins
+            from .models import Notification
+            Notification.objects.create(message=f"Hostel fee receipt uploaded by {student_details.full_name}")
+            
             return redirect('hostel_fee_details')
     else:
         form = FeeReceiptForm(instance=hostel_fee_details)
@@ -332,6 +422,46 @@ def edit_student(request, student_id):
         form = StudentForm(instance=student)
     
     return render(request, 'edit_student.html', {'form': form, 'student': student, 'courses': courses  } )
+
+@login_required
+def delete_course(request, course_id):
+    if request.user.is_superuser:
+        course = get_object_or_404(Course, id=course_id)
+        course.delete()
+        messages.success(request, "Course deleted successfully.")
+    return redirect(request.META.get('HTTP_REFERER', 'landing_page'))
+
+@login_required
+def delete_subject(request, subject_id):
+    if request.user.is_superuser:
+        subject = get_object_or_404(Subject, id=subject_id)
+        subject.delete()
+        messages.success(request, "Subject deleted successfully.")
+    return redirect(request.META.get('HTTP_REFERER', 'landing_page'))
+
+@login_required
+def delete_teacher(request, teacher_id):
+    if request.user.is_superuser:
+        teacher = get_object_or_404(TeacherProfile, id=teacher_id)
+        teacher.delete()
+        messages.success(request, "Teacher deleted successfully.")
+    return redirect(request.META.get('HTTP_REFERER', 'landing_page'))
+
+@login_required
+def delete_student(request, student_id):
+    if request.user.is_superuser:
+        student = get_object_or_404(StudentDetails, id=student_id)
+        student.delete()
+        messages.success(request, "Student deleted successfully.")
+    return redirect(request.META.get('HTTP_REFERER', 'landing_page'))
+
+@login_required
+def delete_fee_receipt(request, receipt_id):
+    if request.user.is_superuser:
+        receipt = get_object_or_404(StudentFeeReceipt, id=receipt_id)
+        receipt.delete()
+        messages.success(request, "Fee receipt deleted successfully.")
+    return redirect(request.META.get('HTTP_REFERER', 'landing_page'))
 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Course, Subject
@@ -420,6 +550,49 @@ def view_marks(request):
 
     return render(request, 'view_marks.html', {'marks': marks, 'msg': msg})
 
+@login_required
+def examinations_dashboard(request):
+    marks = Mark.objects.all().select_related('student', 'subject')
+    
+    # Filtering logic
+    course_filter = request.GET.get('course')
+    subject_filter = request.GET.get('subject')
+    student_filter = request.GET.get('student')
+    
+    if course_filter:
+        marks = marks.filter(subject__course_name__icontains=course_filter)
+    if subject_filter:
+        marks = marks.filter(subject__subject_name__icontains=subject_filter)
+    if student_filter:
+        marks = marks.filter(student__full_name__icontains=student_filter)
+        
+    context = {
+        'marks': marks,
+        'course_filter': course_filter,
+        'subject_filter': subject_filter,
+        'student_filter': student_filter,
+    }
+    return render(request, 'examinations_dashboard.html', context)
+
+@login_required
+def add_exam_result(request):
+    if request.method == 'POST':
+        student_id = request.POST.get('student')
+        subject_id = request.POST.get('subject')
+        marks_obtained = request.POST.get('marks')
+        
+        if student_id and subject_id and marks_obtained:
+            Mark.objects.create(
+                student_id=student_id, 
+                subject_id=subject_id, 
+                marks_obtained=marks_obtained
+            )
+            messages.success(request, 'Exam result added successfully!')
+            return redirect('examinations_dashboard')
+            
+    students = StudentDetails.objects.all().order_by('full_name')
+    subjects = Subject.objects.all().order_by('subject_name')
+    return render(request, 'add_exam_result.html', {'students': students, 'subjects': subjects})
 
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -461,3 +634,149 @@ def usermark(request):
         })
 
 
+@login_required
+def students_page(request):
+    # Retrieve all students and courses for the template
+    students_list = StudentDetails.objects.all()
+    courses = Course.objects.all()
+    if request.method == 'POST':
+        # Delegate adding a student to add_student view logic or handle it here
+        return redirect('students_page')
+    return render(request, 'students_page.html', {'students_list': students_list, 'courses': courses})
+
+@login_required
+def teachers_page(request):
+    from .models import TeacherProfile, Course
+    from django.contrib.auth.models import User
+    
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name', '')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        joining_date = request.POST.get('joining_date')
+        assigned_class_id = request.POST.get('assigned_class')
+        status = request.POST.get('status', 'Present')
+
+        # Split full name into first and last name
+        name_parts = full_name.split(' ', 1)
+        first_name = name_parts[0]
+        last_name = name_parts[1] if len(name_parts) > 1 else ''
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists. Please choose another.")
+        else:
+            # Create user
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                is_staff=True
+            )
+            
+            # Apply joining date if provided
+            if joining_date:
+                from django.utils.dateparse import parse_datetime
+                # Date format from input type="date" is YYYY-MM-DD
+                parsed_date = parse_datetime(f"{joining_date} 00:00:00")
+                if parsed_date:
+                    user.date_joined = parsed_date
+                    user.save()
+
+            # Assign class if selected
+            course = None
+            if assigned_class_id:
+                course = Course.objects.filter(id=assigned_class_id).first()
+
+            # Create TeacherProfile
+            TeacherProfile.objects.create(
+                user=user,
+                assigned_class=course,
+                status=status
+            )
+            messages.success(request, f"Teacher {full_name} added successfully.")
+            return redirect('teachers_page')
+
+    teachers_list = TeacherProfile.objects.all()
+    courses = Course.objects.all()
+    return render(request, 'teachers_page.html', {'teachers_list': teachers_list, 'courses': courses})
+
+@login_required
+def fee_management_page(request):
+    return render(request, 'fee_management_page.html')
+
+@login_required
+def hostel_management_page(request):
+    return render(request, 'hostel_management_page.html')
+
+@login_required
+def mark_attendance(request):
+    from .models import Course, StudentDetails, Attendance
+    courses = Course.objects.all()
+    selected_course = None
+    date = None
+    students = None
+
+    if request.method == 'POST':
+        course_id = request.POST.get('course_id')
+        date = request.POST.get('date')
+        
+        if course_id and date:
+            course = get_object_or_404(Course, id=course_id)
+            students_in_course = StudentDetails.objects.filter(course_name=course)
+            
+            for student in students_in_course:
+                status = request.POST.get(f'status_{student.id}')
+                if status:
+                    Attendance.objects.update_or_create(
+                        course=course,
+                        student=student,
+                        date=date,
+                        defaults={'status': status}
+                    )
+            messages.success(request, f"Attendance marked for {course.name} on {date}.")
+            return redirect('mark_attendance')
+
+    elif request.method == 'GET':
+        course_id = request.GET.get('course_id')
+        date = request.GET.get('date')
+        
+        if course_id and date:
+            selected_course = get_object_or_404(Course, id=course_id)
+            students = StudentDetails.objects.filter(course_name=selected_course)
+
+    return render(request, 'mark_attendance.html', {
+        'courses': courses,
+        'selected_course': selected_course,
+        'date': date,
+        'students': students
+    })
+
+@login_required
+def view_attendance(request):
+    from .models import Attendance
+    attendances = Attendance.objects.all()
+    return render(request, 'view_attendance.html', {'attendances': attendances})
+
+@login_required
+def upload_material(request):
+    from .models import Course
+    courses = Course.objects.all()
+    return render(request, 'upload_material.html', {'courses': courses})
+
+@login_required
+def view_materials(request):
+    from .models import StudyMaterial
+    materials = StudyMaterial.objects.all()
+    return render(request, 'view_materials.html', {'materials': materials})
+
+@login_required
+def mark_notifications_read(request):
+    from .models import Notification
+    if request.method == 'POST':
+        if request.user.is_superuser:
+            Notification.objects.filter(user__isnull=True, is_read=False).update(is_read=True)
+        else:
+            Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    # Redirect back to where the user came from
+    return redirect(request.META.get('HTTP_REFERER', 'landing_page'))

@@ -1,0 +1,87 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Mark Attendance</h4>
+        </div>
+        
+        {% if messages %}
+            <div class="m-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="card-body">
+            <!-- Form to select course and date -->
+            <form method="GET" action="{% url 'mark_attendance' %}" class="mb-4">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label for="course_id">Select Course:</label>
+                        <select name="course_id" id="course_id" class="form-control" required>
+                            <option value="">-- Choose Course --</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if selected_course and selected_course.id == course.id %}selected{% endif %}>{{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="date">Select Date:</label>
+                        <input type="date" name="date" id="date" class="form-control" value="{{ date }}" required>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-secondary w-100">Fetch Students</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Form to submit attendance -->
+            {% if students is not None %}
+                {% if students %}
+                    <form method="POST" action="{% url 'mark_attendance' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="course_id" value="{{ selected_course.id }}">
+                        <input type="hidden" name="date" value="{{ date }}">
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Admission Number</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr>
+                                        <td>{{ student.full_name }}</td>
+                                        <td>{{ student.admission_number }}</td>
+                                        <td>
+                                            <select name="status_{{ student.id }}" class="form-control" required>
+                                                <option value="Present">Present</option>
+                                                <option value="Absent">Absent</option>
+                                                <option value="Late">Late</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" name="submit_attendance" class="btn btn-success mt-3">Save Attendance</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">No students found in this course.</div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

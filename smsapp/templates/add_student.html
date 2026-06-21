@@ -150,7 +150,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="far fa-user"></i></span>
                         </div>
-                        <input type="text" name="full_name" class="form-control" placeholder="Enter full name" required>
+                        <input type="text" name="full_name" class="form-control" placeholder="Enter full name" value="{{ student.full_name|default:'' }}" required>
                     </div>
                 </div>
             </div>
@@ -161,7 +161,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="far fa-user"></i></span>
                         </div>
-                        <input type="text" name="father_name" class="form-control" placeholder="Enter father's name" required>
+                        <input type="text" name="father_name" class="form-control" placeholder="Enter father's name" value="{{ student.father_name|default:'' }}" required>
                     </div>
                 </div>
             </div>
@@ -172,7 +172,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="far fa-user"></i></span>
                         </div>
-                        <input type="text" name="mother_name" class="form-control" placeholder="Enter mother's name" required>
+                        <input type="text" name="mother_name" class="form-control" placeholder="Enter mother's name" value="{{ student.mother_name|default:'' }}" required>
                     </div>
                 </div>
             </div>
@@ -183,7 +183,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                         </div>
-                        <input type="number" name="age" class="form-control" placeholder="Enter age" required>
+                        <input type="number" name="age" class="form-control" placeholder="Enter age" value="{{ student.age|default:'' }}" required>
                     </div>
                 </div>
             </div>
@@ -195,10 +195,10 @@
                             <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
                         </div>
                         <select name="gender" class="form-control" required>
-                            <option value="" disabled selected>Select gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
+                            <option value="" disabled {% if not student %}selected{% endif %}>Select gender</option>
+                            <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
                         </select>
                     </div>
                 </div>
@@ -211,9 +211,9 @@
                             <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
                         </div>
                         <select name="course_name" class="form-control" required>
-                            <option value="" disabled selected>Select class or course</option>
+                            <option value="" disabled {% if not student %}selected{% endif %}>Select class or course</option>
                             {% for course in courses %}
-                                <option value="{{ course.id }}">{{ course.name }}</option>
+                                <option value="{{ course.id }}" {% if student and student.course_name.id == course.id %}selected{% endif %}>{{ course.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -226,7 +226,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                         </div>
-                        <input type="date" name="admission_date" class="form-control" required>
+                        <input type="date" name="admission_date" class="form-control" value="{{ student.admission_date|date:'Y-m-d' }}" required>
                     </div>
                 </div>
             </div>
@@ -237,7 +237,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-id-card"></i></span>
                         </div>
-                        <input type="text" name="admission_number" class="form-control" placeholder="Enter admission number" required>
+                        <input type="text" name="admission_number" class="form-control" placeholder="Enter admission number" value="{{ student.admission_number|default:'' }}" required>
                     </div>
                 </div>
             </div>
@@ -249,11 +249,11 @@
                             <span class="input-group-text"><i class="fas fa-award"></i></span>
                         </div>
                         <select name="scholarship" class="form-control">
-                            <option value="" disabled selected>Select</option>
-                            <option value="E-grants">E-grants</option>
-                            <option value="postgraduate">Postgraduate</option>
-                            <option value="graduate">Graduate</option>
-                            <option value="single girl child">Single Girl Child</option>
+                            <option value="" disabled {% if not student.scholarship %}selected{% endif %}>Select</option>
+                            <option value="E-grants" {% if student.scholarship == 'E-grants' %}selected{% endif %}>E-grants</option>
+                            <option value="postgraduate" {% if student.scholarship == 'postgraduate' %}selected{% endif %}>Postgraduate</option>
+                            <option value="graduate" {% if student.scholarship == 'graduate' %}selected{% endif %}>Graduate</option>
+                            <option value="single girl child" {% if student.scholarship == 'single girl child' %}selected{% endif %}>Single Girl Child</option>
                         </select>
                     </div>
                 </div>
@@ -266,9 +266,9 @@
                             <span class="input-group-text"><i class="fas fa-building"></i></span>
                         </div>
                         <select name="hosteler" class="form-control" required>
-                            <option value="" disabled selected>Select</option>
-                            <option value="True">Yes</option>
-                            <option value="False">No</option>
+                            <option value="" disabled {% if not student %}selected{% endif %}>Select</option>
+                            <option value="True" {% if student.hosteler == True %}selected{% endif %}>Yes</option>
+                            <option value="False" {% if student.hosteler == False %}selected{% endif %}>No</option>
                         </select>
                     </div>
                 </div>
@@ -280,7 +280,7 @@
                         <div class="input-group-prepend" style="align-items: flex-start;">
                             <span class="input-group-text" style="height: 100%; border-radius: 6px 0 0 6px;"><i class="fas fa-map-marker-alt" style="margin-top: 10px;"></i></span>
                         </div>
-                        <textarea name="address" class="form-control" rows="3" placeholder="Enter full address" required></textarea>
+                        <textarea name="address" class="form-control" rows="3" placeholder="Enter full address" required>{{ student.address|default:'' }}</textarea>
                     </div>
                 </div>
             </div>

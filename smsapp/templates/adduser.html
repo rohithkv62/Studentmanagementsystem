@@ -6,6 +6,7 @@
     <title>Add User</title>
     <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         /* Custom styles to align content with the sidebar */
         body {
@@ -43,8 +44,33 @@
                     <input type="text" id="username" name="username" class="form-control" required>
                 </div>
                 <div class="form-group">
+                    <label for="role">Role:</label>
+                    <select id="role" name="role" class="form-control" onchange="toggleTeacherClass()" required>
+                        <option value="student">Student</option>
+                        {% if is_admin %}
+                        <option value="teacher">Teacher</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group" id="teacherClassGroup" style="display: none;">
+                    <label for="assigned_class">Assigned Class (For Teachers):</label>
+                    <select id="assigned_class" name="assigned_class" class="form-control">
+                        <option value="">-- Select Class --</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" class="form-control" required>
+                    <div class="input-group">
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <div class="input-group-append">
+                            <span class="input-group-text" onclick="togglePassword('password', 'togglePasswordIcon')" style="cursor: pointer;">
+                                <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Add User</button>
             </form>
@@ -55,5 +81,32 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function toggleTeacherClass() {
+            const roleSelect = document.getElementById('role');
+            const teacherClassGroup = document.getElementById('teacherClassGroup');
+            if (roleSelect.value === 'teacher') {
+                teacherClassGroup.style.display = 'block';
+            } else {
+                teacherClassGroup.style.display = 'none';
+            }
+        }
+        // Run once on load to set initial state
+        document.addEventListener("DOMContentLoaded", toggleTeacherClass);
+    </script>
 </body>
 </html>

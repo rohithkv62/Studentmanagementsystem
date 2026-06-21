@@ -1,70 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Leave Requests</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa; /* Light background color */
-        }
-        .main-content {
-            margin-left: 250px; /* Adjust according to sidebar width from navbar.html */
-            padding: 20px;
-        }
-        table {
-            margin-top: 20px;
-        }
-        .btn-approve, .btn-deny {
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    {% include 'navbar.html' %}
-    <div class="main-content">
-        <h2 class="mb-4">Leave Requests</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Student Name</th>
-                    <th>Subject</th>
-                    <th>From Date</th>
-                    <th>To Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for request in leave_requests %}
-                    <tr>
-                        <td>{{ request.student_name.full_name }}</td>
-                        <td>{{ request.subject }}</td>
-                        <td>{{ request.from_date }}</td>
-                        <td>{{ request.to_date }}</td>
-                        <td>{{ request.status }}</td>
-                        <td>
-                            {% if request.status == "Pending" %}
-                                <form method="post" style="display:inline;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="request_id" value="{{ request.id }}">
-                                    <button type="submit" name="action" value="approve" class="btn btn-success btn-sm btn-approve">Approve</button>
-                                    <button type="submit" name="action" value="deny" class="btn btn-danger btn-sm btn-deny">Deny</button>
-                                </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="6">No leave requests found.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% extends 'navbar.html' %}
+{% block content %}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar-check text-warning"></i> Leave Requests</h2>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Subject</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in leave_requests %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-primary text-white me-2 d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; border-radius: 50%;">
+                                            {{ request.student_name.full_name|make_list|first|upper }}
+                                        </div>
+                                        <div class="fw-bold">{{ request.student_name.full_name }}</div>
+                                    </div>
+                                </td>
+                                <td>{{ request.subject }}</td>
+                                <td>{{ request.from_date }}</td>
+                                <td>{{ request.to_date }}</td>
+                                <td>
+                                    {% if request.status == "Pending" %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% elif request.status == "Approved" %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Denied</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.status == "Pending" %}
+                                        <form method="post" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="request_id" value="{{ request.id }}">
+                                            <button type="submit" name="action" value="approve" class="btn btn-success btn-sm btn-approve"><i class="fas fa-check"></i></button>
+                                            <button type="submit" name="action" value="deny" class="btn btn-danger btn-sm btn-deny"><i class="fas fa-times"></i></button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-muted"><i class="fas fa-lock"></i> Processed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="fas fa-inbox fa-2x mb-3 text-light"></i><br>
+                                    No leave requests found.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

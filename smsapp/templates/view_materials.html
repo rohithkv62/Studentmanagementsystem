@@ -1,0 +1,41 @@
+{% extends 'navbar.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Study Materials for My Course</h4>
+        </div>
+        <div class="card-body">
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% else %}
+                {% if materials %}
+                    <div class="row">
+                        {% for material in materials %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-info">
+                                <div class="card-body">
+                                    <h5 class="card-title text-info"><i class="fas fa-file-alt"></i> {{ material.title }}</h5>
+                                    <p class="card-text text-muted small"><i class="far fa-clock"></i> Uploaded: {{ material.uploaded_at|date:"M d, Y" }}</p>
+                                    {% if material.description %}
+                                        <p class="card-text">{{ material.description }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer bg-white border-top-0">
+                                    <a href="{{ material.file.url }}" class="btn btn-outline-primary btn-sm" target="_blank" download>
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">No study materials have been uploaded for your course yet.</div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

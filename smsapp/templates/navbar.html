@@ -11,21 +11,21 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f6f9;
+            background-color: #f8fafc;
             color: #334155;
             margin: 0;
             overflow-x: hidden;
         }
-        /* Sidebar styling matching screenshot */
+        /* Premium Sidebar styling */
         .sidebar {
             height: 100vh;
             width: 260px;
             position: fixed;
             top: 0;
             left: 0;
-            background-color: #0b132b; /* Very dark blue matching screenshot */
+            background-color: #ffffff;
+            border-right: 1px solid #e2e8f0;
             padding-top: 20px;
-            color: #cbd5e1;
             z-index: 1000;
             overflow-y: auto;
         }
@@ -36,66 +36,27 @@
             margin-bottom: 30px;
         }
         .sidebar-brand i {
-            font-size: 32px;
-            color: #4f46e5;
-            margin-right: 15px;
-        }
-        .sidebar-brand div {
-            line-height: 1.2;
+            font-size: 28px;
+            color: #2563eb;
+            margin-right: 12px;
         }
         .sidebar-brand .title {
-            color: white;
+            color: #1e293b;
             font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 0.5px;
+            font-size: 1.1rem;
         }
         .sidebar-brand .subtitle {
             color: #64748b;
             font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .user-profile-card {
-            background-color: #1e293b;
-            margin: 0 20px 30px 20px;
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-        }
-        .user-profile-card .avatar {
-            width: 40px;
-            height: 40px;
-            background-color: #4f46e5;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            margin-right: 12px;
-        }
-        .user-profile-card .info {
-            line-height: 1.2;
-        }
-        .user-profile-card .welcome {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-        .user-profile-card .name {
-            font-size: 0.95rem;
-            color: white;
-            font-weight: 600;
         }
 
         .sidebar a {
             padding: 12px 20px;
             text-decoration: none;
-            color: #cbd5e1;
+            color: #64748b;
             display: flex;
             align-items: center;
-            margin: 4px 20px;
+            margin: 4px 16px;
             border-radius: 8px;
             font-weight: 500;
             transition: all 0.2s ease-in-out;
@@ -106,20 +67,107 @@
             font-size: 1.1rem;
             margin-right: 10px;
             text-align: center;
+            color: #94a3b8;
         }
         .sidebar a:hover {
-            background-color: rgba(255,255,255,0.05);
-            color: #ffffff;
-            text-decoration: none;
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        .sidebar a:hover i {
+            color: #64748b;
         }
         .sidebar a.active {
-            background-color: #4f46e5;
+            background-color: #2563eb;
             color: #ffffff;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        .sidebar a.active i {
+            color: #ffffff;
         }
 
-
+        /* Top Header styling */
+        .top-header {
+            height: 70px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+        .top-header .page-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+        }
+        .top-header .page-title i {
+            margin-right: 15px;
+            color: #64748b;
+            cursor: pointer;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header-actions .notification {
+            position: relative;
+            color: #64748b;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+        .header-actions .notification .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 6px;
+            font-size: 0.65rem;
+        }
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-profile .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #bfdbfe;
+            color: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .header-profile .info {
+            line-height: 1.2;
+        }
+        .header-profile .name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+        .header-profile .role {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            background-color: #f8fafc;
+        }
+        .content-padding {
+            padding: 30px;
+        }
     </style>
 </head>
 <body>
@@ -127,51 +175,158 @@
         <div class="sidebar-brand">
             <i class="fas fa-graduation-cap"></i>
             <div>
-                <div class="title">STUDENT</div>
-                <div class="subtitle">MANAGEMENT SYSTEM</div>
+                <div class="title">Student Management</div>
+                <div class="subtitle">System Dashboard</div>
             </div>
         </div>
         
         {% if user.is_authenticated %}
-            <div class="user-profile-card">
-                <div class="avatar"><i class="far fa-user"></i></div>
-                <div class="info">
-                    <div class="welcome">Welcome,</div>
-                    <div class="name">{{ user.username }}</div>
-                </div>
-            </div>
-
+            <div style="padding: 10px 20px; font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-top: 10px;">Main Menu</div>
             {% if user.is_superuser %}
-                <a href="{% url 'landing_page' %}" class="{% if request.resolver_match.url_name == 'landing_page' %}active{% endif %}"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="{% url 'add_user' %}" class="{% if request.resolver_match.url_name == 'add_user' %}active{% endif %}"><i class="fas fa-user-plus"></i> Add User</a>
-                <a href="{% url 'add_course' %}" class="{% if request.resolver_match.url_name == 'add_course' %}active{% endif %}"><i class="fas fa-book-open"></i> Add Course</a>
-                <a href="{% url 'courses' %}" class="{% if request.resolver_match.url_name == 'courses' %}active{% endif %}"><i class="fas fa-layer-group"></i> View Course</a>
-                <a href="{% url 'feedback_list' %}" class="{% if request.resolver_match.url_name == 'feedback_list' %}active{% endif %}"><i class="far fa-comment-dots"></i> Feedbacks</a>
-                <a href="{% url 'hostel_fee_receipts' %}" class="{% if request.resolver_match.url_name == 'hostel_fee_receipts' %}active{% endif %}"><i class="fas fa-building"></i> Hostel Fee Receipts</a>
-                <a href="{% url 'view_leave_requests' %}" class="{% if request.resolver_match.url_name == 'view_leave_requests' %}active{% endif %}"><i class="far fa-calendar-check"></i> Leave requests</a>
-                <a href="{% url 'subcourse_list' %}" class="{% if request.resolver_match.url_name == 'subcourse_list' %}active{% endif %}"><i class="fas fa-book"></i> Add subject</a>
-                <a href="{% url 'course_list' %}" class="{% if request.resolver_match.url_name == 'course_list' %}active{% endif %}"><i class="fas fa-edit"></i> Add mark</a>
-                <a href="{% url 'view_marks' %}" class="{% if request.resolver_match.url_name == 'view_marks' %}active{% endif %}"><i class="fas fa-chart-bar"></i> View Marks</a>
+                <!-- Admin links -->
+                <a href="{% url 'landing_page' %}" class="{% if request.resolver_match.url_name == 'landing_page' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{% url 'students_page' %}" class="{% if request.resolver_match.url_name == 'students_page' %}active{% endif %}">
+                    <i class="fas fa-user-graduate"></i> Students <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'teachers_page' %}" class="{% if request.resolver_match.url_name == 'teachers_page' %}active{% endif %}">
+                    <i class="fas fa-chalkboard-teacher"></i> Teachers <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'courses' %}" class="{% if request.resolver_match.url_name == 'courses' %}active{% endif %}">
+                    <i class="fas fa-book-open"></i> Subjects <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'add_course' %}" class="{% if request.resolver_match.url_name == 'add_course' %}active{% endif %}">
+                    <i class="fas fa-layer-group"></i> Classes <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'mark_attendance' %}" class="{% if request.resolver_match.url_name == 'mark_attendance' %}active{% endif %}">
+                    <i class="fas fa-user-check"></i> Attendance <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'examinations_dashboard' %}" class="{% if request.resolver_match.url_name == 'examinations_dashboard' %}active{% endif %}">
+                    <i class="fas fa-file-signature"></i> Examinations <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'fee_management_page' %}" class="{% if request.resolver_match.url_name == 'fee_management_page' %}active{% endif %}">
+                    <i class="fas fa-file-invoice-dollar"></i> Fee Management <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'hostel_management_page' %}" class="{% if request.resolver_match.url_name == 'hostel_management_page' %}active{% endif %}">
+                    <i class="fas fa-building"></i> Hostel Management <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'feedback_list' %}" class="{% if request.resolver_match.url_name == 'feedback_list' %}active{% endif %}">
+                    <i class="far fa-comment-dots"></i> Feedbacks <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+            {% elif user.is_staff %}
+                <!-- Teacher links -->
+                <a href="{% url 'landing_page' %}" class="{% if request.resolver_match.url_name == 'landing_page' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{% url 'students_page' %}" class="{% if request.resolver_match.url_name == 'students_page' %}active{% endif %}">
+                    <i class="fas fa-user-graduate"></i> Students <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'courses' %}" class="{% if request.resolver_match.url_name == 'courses' %}active{% endif %}">
+                    <i class="fas fa-book-open"></i> Subjects <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'mark_attendance' %}" class="{% if request.resolver_match.url_name == 'mark_attendance' %}active{% endif %}">
+                    <i class="fas fa-user-check"></i> Attendance <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'examinations_dashboard' %}" class="{% if request.resolver_match.url_name == 'examinations_dashboard' %}active{% endif %}">
+                    <i class="fas fa-file-signature"></i> Examinations <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'upload_material' %}" class="{% if request.resolver_match.url_name == 'upload_material' %}active{% endif %}">
+                    <i class="fas fa-tasks"></i> Assignments <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'view_leave_requests' %}" class="{% if request.resolver_match.url_name == 'view_leave_requests' %}active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i> Leave requests <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'add_leave_request' %}" class="{% if request.resolver_match.url_name == 'add_leave_request' %}active{% endif %}">
+                    <i class="far fa-calendar-plus"></i> Apply Leave <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
+                <a href="{% url 'student_leave_status' %}" class="{% if request.resolver_match.url_name == 'student_leave_status' %}active{% endif %}">
+                    <i class="far fa-calendar-check"></i> My Leave Status <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.75rem;"></i>
+                </a>
             {% else %}
                 <a href="{% url 'landing_page' %}" class="{% if request.resolver_match.url_name == 'landing_page' %}active{% endif %}"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="{% url 'add_student' %}" class="{% if request.resolver_match.url_name == 'add_student' %}active{% endif %}"><i class="fas fa-user-plus"></i> Add Student Detail</a>
+                <a href="{% url 'add_student' %}" class="{% if request.resolver_match.url_name == 'add_student' %}active{% endif %}"><i class="fas fa-user-edit"></i> My Profile</a>
                 <a href="{% url 'add_feedback' %}" class="{% if request.resolver_match.url_name == 'add_feedback' %}active{% endif %}"><i class="far fa-comment-dots"></i> Add Feedback</a>
-                <a href="{% url 'hostel_fee_details' %}" class="{% if request.resolver_match.url_name == 'hostel_fee_details' %}active{% endif %}"><i class="fas fa-building"></i> Hostel Fee Details</a>
+                <a href="{% url 'hostel_fee_details' %}" class="{% if request.resolver_match.url_name == 'hostel_fee_details' %}active{% endif %}"><i class="fas fa-building"></i> Hostel Fee</a>
                 <a href="{% url 'add_leave_request' %}" class="{% if request.resolver_match.url_name == 'add_leave_request' %}active{% endif %}"><i class="far fa-calendar-plus"></i> Add Leave</a>
                 <a href="{% url 'student_leave_status' %}" class="{% if request.resolver_match.url_name == 'student_leave_status' %}active{% endif %}"><i class="far fa-calendar-check"></i> Leave Status</a>
                 <a href="{% url 'usermark' %}" class="{% if request.resolver_match.url_name == 'usermark' %}active{% endif %}"><i class="fas fa-chart-bar"></i> View Marks</a>
+                <a href="{% url 'view_attendance' %}" class="{% if request.resolver_match.url_name == 'view_attendance' %}active{% endif %}"><i class="fas fa-calendar-alt"></i> Attendance</a>
+                <a href="{% url 'view_materials' %}" class="{% if request.resolver_match.url_name == 'view_materials' %}active{% endif %}"><i class="fas fa-book-reader"></i> Materials</a>
             {% endif %}
+            <div style="padding: 10px 20px; font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-top: 10px;">Settings</div>
             <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
         {% else %}
             <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
         {% endif %}
     </nav>
-
-
     
     <!-- We leave the original main-content block for pages that extend navbar.html -->
-    <div class="main-content" style="margin-left: 260px; padding: 30px;">
-        {% block content %}{% endblock %}
+    <div class="main-content">
+        {% if user.is_authenticated %}
+        <div class="top-header">
+            <div class="page-title">
+                <i class="fas fa-bars"></i>
+                Dashboard
+            </div>
+            <div class="header-actions">
+                <div class="notification" data-toggle="modal" data-target="#notificationModal" style="cursor: pointer;" title="Click to view notifications">
+                    <i class="far fa-bell"></i>
+                    {% if unread_notif_count and unread_notif_count > 0 %}
+                        <span class="badge badge-danger shadow-sm">{{ unread_notif_count }} New</span>
+                    {% endif %}
+                </div>
+                <div class="header-profile">
+                    <div class="avatar"><i class="far fa-user"></i></div>
+                    <div class="info">
+                        <div class="name">{{ user.username|title }}</div>
+                        <div class="role">{% if user.is_superuser %}Admin / Principal{% elif user.is_staff %}Teacher{% else %}Student{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="content-padding">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="notificationModalLabel"><i class="fas fa-bell"></i> Notifications</h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="border:none; background:transparent;">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body p-0">
+            <div class="list-group list-group-flush">
+                {% for notif in navbar_notifications %}
+                    <div class="list-group-item list-group-item-action {% if not notif.is_read %}bg-light border-left border-primary{% endif %}" style="{% if not notif.is_read %}border-left-width: 4px !important;{% endif %}">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="mb-1 text-sm">{{ notif.message }}</p>
+                            <small class="text-muted">{{ notif.created_at|timesince }} ago</small>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-bell-slash fa-2x mb-2 text-light"></i><br>
+                        No notifications yet.
+                    </div>
+                {% endfor %}
+            </div>
+          </div>
+          <div class="modal-footer justify-content-between">
+            <form method="POST" action="{% url 'mark_notifications_read' %}" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-primary">Mark all as read</button>
+            </form>
+            <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Scripts -->

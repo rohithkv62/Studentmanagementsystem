@@ -10,6 +10,18 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+class TeacherProfile(models.Model):
+    STATUS_CHOICES = [
+        ('Present', 'Present'),
+        ('On Leave', 'On Leave')
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
+    assigned_class = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Present')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.assigned_class} ({self.status})"
+
 # StudentDetails model to store student information
 class StudentDetails(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to the User model
@@ -40,6 +52,14 @@ class Feedback(models.Model):
     def __str__(self):
         return self.title
 
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='notifications')
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message
 # LeaveRequest model to store leave requests from students
 class LeaveRequest(models.Model):
     PENDING = 'Pending'
@@ -102,3 +122,29 @@ class Mark(models.Model):
     def __str__(self):
         return f"Mark for {self.subject} - {self.student.full_name}"
 
+class Attendance(models.Model):
+    STATUS_CHOICES = [
+        ('Present', 'Present'),
+        ('Absent', 'Absent'),
+        ('Late', 'Late')
+    ]
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    student = models.ForeignKey(StudentDetails, on_delete=models.CASCADE)
+    date = models.DateField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Present')
+
+    class Meta:
+        unique_together = ('student', 'date', 'course')
+
+    def __str__(self):
+        return f"{self.student.full_name} - {self.date} - {self.status}"
+
+class StudyMaterial(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to='study_materials/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
